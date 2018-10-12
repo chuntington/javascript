@@ -380,7 +380,7 @@
     ```
 
 <a name="arrays--push"></a>
-- [4.2](#arrays--push) Use [Array.push](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/push) instead of direct assignment to add items to an array.
+- [4.2](#arrays--push) Use [`Array.push`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/push) instead of direct assignment to add items to an array.
 
     ```javascript
     const ninetiesHits = [];
@@ -414,8 +414,8 @@
     const itemsCopy = [...items];
     ```
 
-<a name="arrays--from"></a>
-- [4.4](#arrays--from) To convert an array-like object to an array, use spreads `...` instead of [Array.from](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/from).
+<a name="arrays--from-iterable"></a>
+- [4.4](#arrays--from-iterable) To convert an iterable object to an array, use spreads `...` instead of [`Array.from`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/from).
 
     ```javascript
     const foo = document.querySelectorAll('.foo');
@@ -427,8 +427,21 @@
     const nodes = [...foo];
     ```
 
+<a name="arrays--from-array-like"></a>
+- [4.5](#arrays--from-array-like) Use [`Array.from`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/from) for converting an array-like object to an array.
+
+    ```javascript
+    const arrLike = { 0: 'foo', 1: 'bar', 2: 'baz', length: 3 };
+
+    // bad
+    const arr = Array.prototype.slice.call(arrLike);
+
+    // good
+    const arr = Array.from(arrLike);
+    ```
+
 <a name="arrays--mapping"></a>
-- [4.5](#arrays--mapping) Use [Array.from](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/from) instead of spread `...` for mapping over iterables, because it avoids creating an intermediate array.
+- [4.6](#arrays--mapping) Use [`Array.from`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/from) instead of spread `...` for mapping over iterables, because it avoids creating an intermediate array.
     
     ```javascript
     // bad
@@ -439,7 +452,7 @@
     ```
 
 <a name="arrays--callback-return"></a>
-- [4.6](#arrays--callback-return) Use return statements in array method callbacks. It’s ok to omit the return if the function body consists of a single statement returning an expression without side effects. eslint: [`array-callback-return`](http://eslint.org/docs/rules/array-callback-return)
+- [4.7](#arrays--callback-return) Use return statements in array method callbacks. It’s ok to omit the return if the function body consists of a single statement returning an expression without side effects. eslint: [`array-callback-return`](http://eslint.org/docs/rules/array-callback-return)
 
     ```javascript
     // good
@@ -488,7 +501,7 @@
     ```
 
 <a name="arrays--bracket-newline"></a>
-- [4.7](#arrays--bracket-newline) Use line breaks after open and before close array brackets if an array has multiple lines.
+- [4.8](#arrays--bracket-newline) Use line breaks after open and before close array brackets if an array has multiple lines.
 
     ```javascript
     // bad
@@ -618,18 +631,18 @@
 
     ```javascript
     // bad
-    const errorMessage = 'This is a super long error that was thrown because \
-    of Batman. When you stop to think about how Batman had anything to do \
-    with this, you would get nowhere \
+    const errorMessage = 'This is a super long error that was thrown out of \
+    pure self indulgence. When you stop to think about why this message is so \
+    long, you would get nowhere \
     fast.';
 
     // bad
-    const errorMessage = 'This is a super long error that was thrown because ' +
-        'of Batman. When you stop to think about how Batman had anything to do ' +
-        'with this, you would get nowhere fast.';
+    const errorMessage = 'This is a super long error that was thrown out of ' +
+        'pure self indulgence. When you stop to think about why this message is so ' +
+        'long, you would get nowhere fast.';
 
     // good
-    const errorMessage = 'This is a super long error that was thrown because of Batman. When you stop to think about how Batman had anything to do with this, you would get nowhere fast.';
+    const errorMessage = 'This is a super long error that was thrown out of pure self indulgence. When you stop to think about why this message is so long, you would get nowhere fast.';
     ```
 
 <a name="es6-template-literals"></a>
@@ -639,23 +652,23 @@
 
     ```javascript
     // bad
-    function sayHi(name) {
-        return 'How are you, ' + name + '?';
+    function saySup(name) {
+        return '\'Sup, ' + name + '?';
     }
 
     // bad
-    function sayHi(name) {
-        return ['How are you, ', name, '?'].join();
+    function saySup(name) {
+        return ['\'Sup, ', name, '?'].join();
     }
 
     // okay
-    function sayHi(name) {
-        return `How are you, ${ name }?`;
+    function saySup(name) {
+        return `'Sup, ${ name }?`;
     }
 
     // good
-    function sayHi(name) {
-        return `How are you, ${name}?`;
+    function saySup(name) {
+        return `'Sup, ${name}?`;
     }
     ```
 
@@ -692,12 +705,12 @@
     }
 
     // okay, anonymous
-    const foo = function () {
+    const foo = function() {
         // ...
     };
 
-    // good, traceable
-    const foo = function bar() {
+    // good, lexical name distinguished from the variable-referenced invocation(s)
+    const foo = function longUniqueMoreDescriptiveLexicalFoo() {
         // ...
     };
     ```
@@ -1515,30 +1528,37 @@
 
     // bad
     let sum = 0;
+
     for (let num of numbers) {
         sum += num;
     }
+
     sum === 15;
 
     // okay
     let sum = 0;
+
     numbers.forEach((num) => {
         sum += num;
     });
+
     sum === 15;
 
     // good
     const sum = numbers.reduce((total, num) => total + num, 0);
+
     sum === 15;
 
     // bad
     const increasedByOne = [];
+
     for (let i = 0; i < numbers.length; i++) {
         increasedByOne.push(numbers[i] + 1);
     }
 
     // okay
     const increasedByOne = [];
+
     numbers.forEach((num) => {
         increasedByOne.push(num + 1);
     });
@@ -1608,10 +1628,10 @@
 
     ```javascript
     // bad
-    superPower = new SuperPower();
+    polluter = new Polluter();
 
     // good
-    const superPower = new SuperPower();
+    const polluter = new Polluter();
     ```
 
 <a name="variables--one-const"></a>
@@ -1621,20 +1641,20 @@
 
     ```javascript
     // bad
-    const items = getItems(),
-        goSportsTeam = true,
-        dragonball = 'z';
+    const cubes = getCubes(),
+        isAnimating = true,
+        axis = 'z';
 
     // bad
     // (compare to above, and try to spot the mistake)
-    const items = getItems(),
-        goSportsTeam = true;
-        dragonball = 'z';
+    const cubes = getCubes(),
+        isAnimating = true;
+        axis = 'z';
 
     // good
-    const items = getItems();
-    const goSportsTeam = true;
-    const dragonball = 'z';
+    const cubes = getCubes();
+    const isAnimating = true;
+    const axis = 'z';
     ```
 
 <a name="variables--define-where-used"></a>
@@ -1686,8 +1706,8 @@
     (function example() {
         // JavaScript interprets this as
         // let a = ( b = ( c = 1 ) );
-        // The let keyword only applies to variable a; variables b and c become
-        // global variables.
+        // The let keyword only applies to variable a;
+        // variables b and c become global variables.
         let a = b = c = 1;
     }());
 
@@ -1777,10 +1797,10 @@
 
     ```javascript
     function example() {
-        superPower(); // => Flying
+        favoriteFruit(); // => Banana
 
-        function superPower() {
-            console.log('Flying');
+        function favoriteFruit() {
+            console.log('Banana');
         }
     }
     ```
@@ -1809,10 +1829,10 @@
 
         named(); // => TypeError named is not a function
 
-        superPower(); // => ReferenceError superPower is not defined
+        favoriteFruit(); // => ReferenceError favoriteFruit is not defined
 
-        var named = function superPower() {
-            console.log('Flying');
+        var named = function favoriteFruit() {
+            console.log('Banana');
         };
     }
 
@@ -2108,7 +2128,7 @@
         }
     }
 
-    //good
+    // good
     function dogs(x) {
         if (x) {
             if (z) {
@@ -2165,7 +2185,7 @@
 
     // good
     if (
-        (foo === 123 || bar === "abc")
+        (foo === 123 || bar === 'abc')
         && doesItLookGoodWhenItBecomesThatLong()
         && isThisReallyHappening()
     ) {
@@ -2730,40 +2750,40 @@
 
     ```javascript
     // bad - raises exception
-    const luke = {}
-    const leia = {}
-    [luke, leia].forEach(jedi => jedi.father = 'vader')
+    const daisy = {}
+    const peach = {}
+    [daisy, peach].forEach(princess => princess.status = 'danger')
 
     // bad - raises exception
-    const reaction = "No! That's impossible!"
-    (async function meanwhileOnTheFalcon() {
-        // handle `leia`, `lando`, `chewie`, `r2`, `c3p0`
+    const reaction = 'Oh no! We must rescue the princesses!'
+    (async function marioBrothers() {
+        // handle `mario`, `luigi`, `yoshi`, `toad`
         // ...
     }())
 
     // bad - returns `undefined` instead of the value on the next line - always happens when `return` is on a line by itself because of ASI!
-    function foo() {
+    function rescue() {
         return
-            'search your feelings, you know it to be foo'
+            'Search the fiery castle...'
     }
 
     // good
-    const luke = {};
-    const leia = {};
-    [luke, leia].forEach((jedi) => {
-        jedi.father = 'vader';
+    const daisy = {};
+    const peach = {};
+    [daisy, peach].forEach((princess) => {
+        princess.status = 'danger';
     });
 
     // good
-    const reaction = "No! That's impossible!";
-    (async function meanwhileOnTheFalcon() {
-        // handle `leia`, `lando`, `chewie`, `r2`, `c3p0`
+    const reaction = 'Oh no! We must rescue the princesses!';
+    (async function marioBrothers() {
+        // handle `mario`, `luigi`, `yoshi`, `toad`
         // ...
     }());
 
     // good
-    function foo() {
-        return 'Search your feelings, you know it to be foo...';
+    function rescue() {
+        return 'Search the fiery castle...';
     }
     ```
 
@@ -2889,7 +2909,7 @@
     }
 
     const obj = new user({
-        name: 'Cameron'
+        name: 'Trevor'
     });
 
     // good
@@ -2900,7 +2920,7 @@
     }
 
     const obj = new User({
-        name: 'Cameron'
+        name: 'Trevor'
     });
     ```
 
@@ -3048,7 +3068,7 @@
 - [24.1](#accessors--not-required) Accessor functions for properties are not required.
 
 <a name="accessors--no-getters-setters"></a>
-- [24.2](#accessors--no-getters-setters) Do not use JavaScript getters/setters as they cause unexpected side effects and are harder to test, maintain, and reason about. Instead, if you do make accessor functions, use getVal() and setVal('hello').
+- [24.2](#accessors--no-getters-setters) Do not use JavaScript getters/setters as they cause unexpected side effects and are harder to test, maintain, and reason about. Instead, if you do make accessor functions, use `getVal()` and `setVal('hello')`.
 
     ```javascript
     // bad
@@ -3090,7 +3110,7 @@
     ```
 
 <a name="accessors--consistent"></a>
-- [24.4](#accessors--consistent) It’s okay to create get() and set() functions, but be consistent.
+- [24.4](#accessors--consistent) It’s okay to create `get()` and `set()` functions, but be consistent.
 
     ```javascript
     class Ninja {
