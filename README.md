@@ -2,7 +2,7 @@
 
 *A pretty reasonable approach to JavaScript*
 
-> **Note**: this guide assumes you are using [Babel](https://babeljs.io) and that you are installing shims/polyfills in your app.
+> **Note**: This guide assumes you are using [Babel](https://babeljs.io) and that you are installing shims/polyfills in your app.
 
 ## Table of Contents
 
@@ -111,7 +111,7 @@
 
     ```javascript
     // good
-    /**
+    /*
      * parseInt was the reason my code was slow.
      * Bitshifting the String to coerce it to a
      * Number made it a lot faster.
@@ -325,7 +325,7 @@
     ```
 
 <a name="objects--prototype-builtins"></a>
-  - [3.8](#objects--prototype-builtins) Do not call `Object.prototype` methods directly, such as `hasOwnProperty`, `propertyIsEnumerable`, and `isPrototypeOf`.
+  - [3.8](#objects--prototype-builtins) Do not call `Object.prototype` methods directly, such as `hasOwnProperty`, `propertyIsEnumerable`, and `isPrototypeOf`. eslint: [`no-prototype-builtins`](https://eslint.org/docs/rules/no-prototype-builtins)
 
     > Why? These methods may be shadowed by properties on the object in question - consider `{ hasOwnProperty: false }` - or, the object may be a null object (`Object.create(null)`).
 
@@ -403,13 +403,6 @@
         itemsCopy[i] = items[i];
     }
 
-    // bad
-    const itemsCopy = [];
-
-    items.forEach((item, index) => {
-        itemsCopy[index] = item;
-    });
-
     // good
     const itemsCopy = [...items];
     ```
@@ -418,20 +411,20 @@
 - [4.4](#arrays--from-iterable) To convert an iterable object to an array, use spreads `...` instead of [`Array.from`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/from).
 
     ```javascript
-    const foo = document.querySelectorAll('.foo');
+    const element = document.querySelectorAll('.element');
 
     // okay
-    const nodes = Array.from(foo);
+    const nodes = Array.from(element);
 
     // good
-    const nodes = [...foo];
+    const nodes = [...element];
     ```
 
 <a name="arrays--from-array-like"></a>
 - [4.5](#arrays--from-array-like) Use [`Array.from`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/from) for converting an array-like object to an array.
 
     ```javascript
-    const arrLike = { 0: 'foo', 1: 'bar', 2: 'baz', length: 3 };
+    const arrLike = { 0: 'a', 1: 'b', 2: 'c', length: 3 };
 
     // bad
     const arr = Array.prototype.slice.call(arrLike);
@@ -445,10 +438,10 @@
     
     ```javascript
     // bad
-    const baz = [...foo].map(bar);
+    const items = [...iterables].map(mutator);
 
     // good
-    const baz = Array.from(foo, bar);
+    const items = Array.from(iterables, mutator);
     ```
 
 <a name="arrays--callback-return"></a>
@@ -457,8 +450,7 @@
     ```javascript
     // good
     [1, 2, 3].map((x) => {
-        const y = x + 1;
-        return x * y;
+        return x + 1;
     });
 
     // good
@@ -466,23 +458,26 @@
 
     // bad - no returned value means `memo` becomes undefined after the first iteration
     [[0, 1], [2, 3], [4, 5]].reduce((memo, item, index) => {
-        const flatten = memo.concat(item);
-        memo[index] = flatten;
+        const flattened = memo.concat(item);
+
+        memo[index] = flattened;
     });
 
     // good
     [[0, 1], [2, 3], [4, 5]].reduce((memo, item, index) => {
-        const flatten = memo.concat(item);
-        memo[index] = flatten;
-        return flatten;
+        const flattened = memo.concat(item);
+
+        memo[index] = flattened;
+
+        return flattened;
     });
 
     // bad
     inbox.filter((msg) => {
         const { subject, author } = msg;
 
-        if (subject === 'Mockingbird') {
-            return author === 'Harper Lee';
+        if (subject === 'Did You Get My Memo?') {
+            return author === 'Bill Lumbergh';
         } else {
             return false;
         }
@@ -492,8 +487,8 @@
     inbox.filter((msg) => {
         const { subject, author } = msg;
 
-        if (subject === 'Mockingbird') {
-            return author === 'Harper Lee';
+        if (subject === 'Did You Get My Memo?') {
+            return author === 'Bill Lumbergh';
         }
 
         return false;
@@ -868,7 +863,7 @@
 
     // good
     const x = function() {};
-    const z = function a() {};
+    const y = function z() {};
     ```
 
 <a name="functions--mutate-params"></a>
@@ -878,12 +873,12 @@
 
     ```javascript
     // bad
-    function f1(obj) {
+    function foo(obj) {
         obj.key = 1;
     }
 
     // good
-    function f2(obj) {
+    function foo(obj) {
         const key = Object.prototype.hasOwnProperty.call(obj, 'key') ? obj.key : 1;
     }
     ```
@@ -895,23 +890,23 @@
 
     ```javascript
     // bad
-    function f1(a) {
+    function foo(a) {
         a = 1;
         // ...
     }
 
-    function f2(a) {
+    function foo(a) {
         if (!a) { a = 1; }
         // ...
     }
 
     // good
-    function f3(a) {
+    function foo(a) {
         const b = a || 1;
         // ...
     }
 
-    function f4(a = 1) {
+    function foo(a = 1) {
         // ...
     }
     ```
@@ -1066,6 +1061,7 @@
     // bad
     [1, 2, 3].map(number => {
         const nextNumber = number + 1;
+
         `A string containing the ${nextNumber}.`;
     });
 
@@ -1075,6 +1071,7 @@
     // good
     [1, 2, 3].map((number) => {
         const nextNumber = number + 1;
+
         return `A string containing the ${nextNumber}.`;
     });
 
@@ -1086,6 +1083,7 @@
     // No implicit return with side effects
     function foo(callback) {
         const val = callback();
+
         if (val === true) {
             // Do something if callback returns true
         }
@@ -1123,7 +1121,7 @@
     ));
     ```
 <a name="arrows--one-arg-parens"></a>
-- [8.4](#arrows--one-arg-parens) If your function takes a single argument and doesn’t use braces, omit the parentheses. Otherwise, always include parentheses around arguments for clarity and consistency. Note: it is also acceptable to always use parentheses, in which case use the [“always” option](https://eslint.org/docs/rules/arrow-parens#always) for eslint. eslint: [`arrow-parens`](https://eslint.org/docs/rules/arrow-parens.html)
+- [8.4](#arrows--one-arg-parens) If your function takes a single argument and doesn’t use braces, omit the parentheses. Otherwise, always include parentheses around arguments for clarity and consistency. **Note:** It is also acceptable to always use parentheses, in which case use the [“always” option](https://eslint.org/docs/rules/arrow-parens#always) for eslint. eslint: [`arrow-parens`](https://eslint.org/docs/rules/arrow-parens.html)
 
     > Why? Less visual clutter.
 
@@ -1142,12 +1140,14 @@
     // bad
     [1, 2, 3].map(x => {
         const y = x + 1;
+
         return x * y;
     });
 
     // good
     [1, 2, 3].map((x) => {
         const y = x + 1;
+
         return x * y;
     });
     ```
@@ -1208,7 +1208,9 @@
 
     Queue.prototype.pop = function() {
         const value = this.queue[0];
+
         this.queue.splice(0, 1);
+
         return value;
     };
 
@@ -1219,7 +1221,9 @@
         }
         pop() {
             const value = this.queue[0];
+
             this.queue.splice(0, 1);
+
             return value;
         }
     }
@@ -1274,16 +1278,19 @@
     class Dog {
         jump() {
             this.jumping = true;
+
             return this;
         }
 
         setHeight(height) {
             this.height = height;
+
             return this;
         }
     }
 
     const Theodore = new Dog();
+
     Theodore.jump()
         .setHeight(Infinity);
     ```
@@ -1480,6 +1487,8 @@
 <a name="modules--multiline-imports-over-newlines"></a>
 - [10.8](#modules--multiline-imports-over-newlines) Multiline imports should be indented just like multiline array and object literals.
 
+    > Why? The curly braces follow the same indentation rules as every other curly brace block in the style guide, as do the trailing commas.
+
     ```javascript
     // bad
     import { longNameA, longNameB, longNameC, longNameD, longNameE } from 'path';
@@ -1674,6 +1683,7 @@
 
         if (name === 'test') {
             this.setName('');
+
             return false;
         }
 
@@ -1690,6 +1700,7 @@
 
         if (name === 'test') {
             this.setName('');
+
             return false;
         }
 
@@ -1697,7 +1708,7 @@
     }
     ```
 <a name="variables--no-chain-assignment"></a>
-- [13.4](#variables--no-chain-assignment) Don’t chain variable assignments.
+- [13.4](#variables--no-chain-assignment) Don’t chain variable assignments. eslint: [`no-multi-assign`](https://eslint.org/docs/rules/no-multi-assign)
 
     > Why? Chaining variable assignments creates implicit global variables.
 
@@ -2198,7 +2209,7 @@
     }
     ```
 
-<a name="control-statement--value-selection"></a>
+<a name="control-statements--value-selection"></a>
 - [17.2](#control-statements--value-selection) Selection operators should not be used in place of control statements.
 
     ```javascript
@@ -2216,7 +2227,7 @@
 ## Comments
 
 <a name="comments--multiline"></a>
-- [18.1](#comments--multiline) Use `/** ... */` for multi-line comments.
+- [18.1](#comments--multiline) Use `/* ... */` for multi-line comments.
 
     ```javascript
     // bad
@@ -2299,7 +2310,7 @@
     const active = true;
 
     // bad
-    /**
+    /*
      *make() returns a new element
      *based on the passed-in tag name
      */
@@ -2309,7 +2320,7 @@
     }
 
     // good
-    /**
+    /*
      * make() returns a new element
      * based on the passed-in tag name
      */
@@ -2575,9 +2586,61 @@
         console.log(foo);
     }
     ```
+<a name="whitespace--no-multiple-blanks"></a>
+- [19.9](#whitespace--no-multiple-blanks) Do not use multiple blank lines to pad your code. eslint: [`no-multiple-empty-lines`](https://eslint.org/docs/rules/no-multiple-empty-lines)
+
+    ```javascript
+    // bad
+    class Person {
+        constructor(fullName, email, birthday) {
+            this.fullName = fullName;
+
+
+            this.email = email;
+
+
+            this.setAge(birthday);
+        }
+
+
+        setAge(birthday) {
+            const today = new Date();
+
+
+            const age = this.getAge(today, birthday);
+
+
+            this.age = age;
+        }
+
+
+        getAge(today, birthday) {
+            // ..
+        }
+    }
+
+    // good
+    class Person {
+        constructor(fullName, email, birthday) {
+            this.fullName = fullName;
+            this.email = email;
+            this.setAge(birthday);
+        }
+
+        setAge(birthday) {
+            const today = new Date();
+            const age = getAge(today, birthday);
+            this.age = age;
+        }
+
+        getAge(today, birthday) {
+            // ..
+        }
+    }
+    ```
 
 <a name="whitespace--in-parens"></a>
-- [19.9](#whitespace--in-parens) Do not add spaces inside parentheses. eslint: [`space-in-parens`](http://eslint.org/docs/rules/space-in-parens.html)
+- [19.10](#whitespace--in-parens) Do not add spaces inside parentheses. eslint: [`space-in-parens`](http://eslint.org/docs/rules/space-in-parens.html)
 
     ```javascript
     // bad
@@ -2602,7 +2665,7 @@
     ```
 
 <a name="whitespace--in-brackets"></a>
-- [19.10](#whitespace--in-brackets) Do not add spaces inside brackets. eslint: [`array-bracket-spacing`](http://eslint.org/docs/rules/array-bracket-spacing.html)
+- [19.11](#whitespace--in-brackets) Do not add spaces inside brackets. eslint: [`array-bracket-spacing`](http://eslint.org/docs/rules/array-bracket-spacing.html)
 
     ```javascript
     // bad
@@ -2615,7 +2678,7 @@
     ```
 
 <a name="whitespace--in-braces"></a>
-- [19.11](#whitespace--in-braces) Add spaces inside curly braces. eslint: [`object-curly-spacing`](http://eslint.org/docs/rules/object-curly-spacing.html)
+- [19.12](#whitespace--in-braces) Add spaces inside curly braces. eslint: [`object-curly-spacing`](http://eslint.org/docs/rules/object-curly-spacing.html)
 
     ```javascript
     // bad
@@ -2626,7 +2689,7 @@
     ```
 
 <a name="whitespace--max-len"></a>
-- [19.12](#whitespace--max-len) Avoid having lines of code that are longer than 100 characters (including whitespace). Note: per [above](#strings--line-length), long strings are exempt from this rule, and should not be broken up. eslint: [`max-len`](http://eslint.org/docs/rules/max-len.html)
+- [19.13](#whitespace--max-len) Avoid having lines of code that are longer than 100 characters (including whitespace). **Note:** Per [above](#strings--line-length), long strings are exempt from this rule, and should not be broken up. eslint: [`max-len`](http://eslint.org/docs/rules/max-len.html)
 
     > Why? This ensures readability and maintainability.
 
@@ -2655,6 +2718,94 @@
     }).fail(() => {
         console.log('You have failed this city.');
     });
+    ```
+<a name="whitespace--block-spacing"></a>
+- [19.14](#whitespace--block-spacing) Require consistent spacing inside an open block token and the next token on the same line. This rule also enforces consistent spacing inside a close block token and previous token on the same line. eslint: [`block-spacing`](https://eslint.org/docs/rules/block-spacing)
+
+    ```javascript
+    // bad
+    function foo() {return true;}
+    if (foo) { bar = 0;}
+
+    // good
+    function foo() { return true; }
+    if (foo) { bar = 0; }
+    ```
+
+<a name="whitespace--comma-spacing"></a>
+- [19.15](#whitespace--comma-spacing) Avoid spaces before commas and require a space after commas. eslint: [`comma-spacing`](https://eslint.org/docs/rules/comma-spacing)
+
+    ```javascript
+    // bad
+    var foo = 1,bar = 2;
+    var arr = [1 , 2];
+
+    // good
+    var foo = 1, bar = 2;
+    var arr = [1, 2];
+    ```
+
+<a name="whitespace--computed-property-spacing"></a>
+- [19.16](#whitespace--computed-property-spacing) Enforce spacing inside of computed property brackets. eslint: [`computed-property-spacing`](https://eslint.org/docs/rules/computed-property-spacing)
+
+    ```javascript
+    // bad
+    obj[foo ]
+    obj[ 'foo']
+    var x = {[ b ]: a}
+    obj[foo[ bar ]]
+
+    // good
+    obj[foo]
+    obj['foo']
+    var x = { [b]: a }
+    obj[foo[bar]]
+    ```
+
+<a name="whitespace--func-call-spacing"></a>
+- [19.17](#whitespace--func-call-spacing) Avoid spaces between functions and their invocations. eslint: [`func-call-spacing`](https://eslint.org/docs/rules/func-call-spacing)
+
+    ```javascript
+    // bad
+    func ();
+
+    func
+    ();
+
+    // good
+    func();
+    ```
+
+<a name="whitespace--key-spacing"></a>
+- [19.18](#whitespace--key-spacing) Enforce spacing between keys and values in object literal properties. eslint: [`key-spacing`](https://eslint.org/docs/rules/key-spacing)
+
+    ```javascript
+    // bad
+    var obj = { "foo" : 42 };
+    var obj2 = { "foo":42 };
+
+    // good
+    var obj = { "foo": 42 };
+    ```
+
+<a name="whitespace--no-trailing-spaces"></a>
+- [19.19](#whitespace--no-trailing-spaces) Avoid trailing spaces at the end of lines. eslint: [`no-trailing-spaces`](https://eslint.org/docs/rules/no-trailing-spaces)
+
+<a name="whitespace--no-multiple-empty-lines"></a>
+- [19.20](#whitespace--no-multiple-empty-lines) Avoid multiple empty lines and only allow one newline at the end of files. eslint: [`no-multiple-empty-lines`](https://eslint.org/docs/rules/no-multiple-empty-lines)
+
+    ```javascript
+    // bad
+    var x = 1;
+
+
+
+    var y = 2;
+
+    // good
+    var x = 1;
+
+    var y = 2;
     ```
 
 **[⬆ back to top](#table-of-contents)**
@@ -2946,6 +3097,7 @@
     // bad
     function foo() {
         const self = this;
+
         return function() {
             console.log(self);
         };
